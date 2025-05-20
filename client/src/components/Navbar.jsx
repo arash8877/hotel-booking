@@ -40,12 +40,20 @@ const Navbar = () => {
   const location = useLocation();
 
   useEffect(() => {
+    if (location.pathname !== "/") {
+      setIsScrolled(true);
+      return;
+    } else {
+      setIsScrolled(false);
+    }
+    setIsScrolled((prev) => (location.pathname !== "/" ? true : prev));
+
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 10);
     };
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+  }, [location.pathname]);
 
   return (
     <nav
@@ -132,7 +140,7 @@ const Navbar = () => {
           onClick={() => setIsMenuOpen(!isMenuOpen)}
           src={assets.menuIcon}
           alt="menu-icon"
-          className={`${isScrolled && "invert"} h-4`}
+          className={`${isScrolled && "invert"} h-4 cursor-pointer`}
         />
       </div>
 
@@ -146,7 +154,7 @@ const Navbar = () => {
           <img
             src={assets.closeMenu}
             alt="close-icon"
-            className={`${isScrolled && "invert"} h-6.5`}
+            className={`${isScrolled && "invert"} h-6.5 cursor-pointer`}
           />
         </button>
 
