@@ -160,7 +160,7 @@ const RoomDetails = () => {
         <div className="flex flex-col items-start gap-4">
           <div className="flex gap-4">
             <img
-              src={room?.hotel?.owner?.image}
+              src={room.hotel.owner.image}
               alt="Host"
               className="h-14 w-14 md:h-18 md:w-18 rounded-full"
             />
