@@ -11,12 +11,27 @@ const AppContext = createContext();
 export const AppProvider = ({ children }) => {
   const [isOwner, setIsOwner] = useState(false);
   const [showHotelReg, setShowHotelReg] = useState(false);
-  const [searchedCities, setSearchedCities] = useState([])
+  const [searchedCities, setSearchedCities] = useState([]);
+  const [rooms, setRooms] = useState([]);
 
   const currency = import.meta.env.VITE_CURRENCY || "DKK";
   const navigate = useNavigate();
   const { user } = useUser();
   const { getToken } = useAuth();
+
+  const fetchRooms = async () => {
+    try {
+      const { data } = await axios.get("/api/rooms");
+
+      if (data.success) {
+        setRooms(data.rooms);
+      } else {
+        toast.error(data.message || "Failed to fetch rooms");
+      }
+    } catch (error) {
+      toast.error(error.message || "Failed to fetch rooms");
+    }
+  };
 
   const fetchUser = async () => {
     try {
@@ -37,6 +52,11 @@ export const AppProvider = ({ children }) => {
     }
   }, [user]);
 
+
+  useEffect(() => {
+    fetchRooms();
+  }, []);
+
   const value = {
     currency,
     navigate,
@@ -48,6 +68,8 @@ export const AppProvider = ({ children }) => {
     setShowHotelReg,
     searchedCities,
     setSearchedCities,
+    rooms,
+    setRooms,
     axios,
   };
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
