@@ -1,4 +1,5 @@
 import { useState } from "react";
+import axios from "axios";
 import { assets, cities } from "../assets/assets";
 import { useAppContext } from "../context/AppContext";
 import toast from "react-hot-toast";
@@ -8,7 +9,7 @@ const HotelReg = () => {
   const [address, setAddress] = useState("");
   const [contact, setContact] = useState("");
   const [city, setCity] = useState("");
-  const { setShowHotelReg, getToken, setIsOwner, axios } = useAppContext();
+  const { setShowHotelReg, getToken, setIsOwner } = useAppContext();
 
   const onSubmitHandler = async (e) => {
     e.preventDefault();

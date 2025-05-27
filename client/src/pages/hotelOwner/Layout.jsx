@@ -5,14 +5,14 @@ import Sidebar from "../../components/hotelOwner/Sidebar";
 import { useAppContext } from "../../context/AppContext";
 
 const Layout = () => {
-  const { isOwner, navigate } = useAppContext();
+  // const { isOwner, navigate } = useAppContext();
 
-  // protect the dashboard route
-  useEffect(() => {
-    if (!isOwner) {
-      navigate("/");
-    }
-  }, [isOwner]);
+  // // protect the dashboard route
+  // useEffect(() => {
+  //   if (!isOwner) {
+  //     navigate("/");
+  //   }
+  // }, [isOwner]);
 
   return (
     <div className="flex flex-col h-screen">
