@@ -1,8 +1,8 @@
 import express from "express";
+import { clerkMiddleware } from "@clerk/express";
 import "dotenv/config";
 import cors from "cors";
 import connectDB from "./configs/db.js";
-import { clerkMiddleware } from "@clerk/express";
 import clerkWebhooks from "./controllers/clerkWebhooks.js";
 import userRouter from "./routes/userRoutes.js";
 import hotelRouter from "./routes/hotelRoutes.js";
@@ -14,21 +14,19 @@ connectDB();
 connectCloudinary();
 
 const app = express();
-app.use(cors()); //Enable cross-origin resource sharing
 
+// ✨ Middleware ✨
+app.use(cors());
+app.use(express.json());
+app.use(clerkMiddleware()); // This populates req.auth
+
+// Routes
 app.get("/", (req, res) => res.send("API is working!"));
 app.use("/api/user", userRouter);
 app.use("/api/hotels", hotelRouter);
 app.use("/api/rooms", roomRouter);
 app.use("/api/bookings", bookingRouter);
+app.use("/api/clerk", clerkWebhooks); 
 
 const PORT = process.env.PORT || 3000;
-
-// Middleware
-app.use(express.json());
-app.use(clerkMiddleware());
-
-// API to listen to Clerk webhooks
-app.use("/api/clerk", clerkWebhooks);
-
-app.listen(PORT, () => console.log(`Server is running on port ${PORT}`));
+app.listen(PORT, () => console.log(`🔥 Server is running on port ${PORT}`));
