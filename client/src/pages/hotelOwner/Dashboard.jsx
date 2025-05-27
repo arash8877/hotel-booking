@@ -1,9 +1,38 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Title from "../../components/Title";
 import { assets, dashboardDummyData } from "../../assets/assets";
+import { useAppContext } from "../../context/AppContext";
 
 const Dashboard = () => {
-  const [dashboardData, setDashboardData] = useState(dashboardDummyData);
+  const [dashboardData, setDashboardData] = useState({
+    bookings: [],
+    totalBookings: 0,
+    totalRevenue: 0,
+  });
+  const { user, currency, getToken, toast, axios } = useAppContext();
+
+  const fetchDashboardData = async () => {
+    try {
+      const response = await axios.get("/api/bookings/hotel", {
+        headers: { Authorization: `Bearer ${await getToken()}` },
+      });
+      if (response.data) {
+        setDashboardData(response.data);
+      } else {
+        toast.error(response.data.message);
+      }
+    } catch (error) {
+      console.error("Error fetching dashboard data:", error);
+      toast.error(error.message, "Failed to fetch dashboard data");
+    }
+  };
+
+  useEffect(() => {
+    if (user) {
+      fetchDashboardData();
+    }
+  }, [user]);
+
   return (
     <div>
       <Title
@@ -27,7 +56,7 @@ const Dashboard = () => {
           <img src={assets.totalRevenueIcon} alt="revenue-icon" className="max-sm:hidden h-10" />
           <div className="flex flex-col sm:ml-4 font-medium">
             <p className="text-blue-500 text-lg">Total Revenue</p>
-            <p className="text-neutral-400 text-base">DKK {dashboardData.totalRevenue}</p>
+            <p className="text-neutral-400 text-base">{currency} {dashboardData.totalRevenue}</p>
           </div>
         </div>
         {/* ----- Recent Bookings ----- */}
@@ -47,12 +76,24 @@ const Dashboard = () => {
           <tbody className="text-sm">
             {dashboardData.bookings.map((booking) => (
               <tr key={booking._id} className="border-b border-gray-200 hover:bg-gray-50">
-                <td className="py-3 px-4 text-gray-700 border-t border-gray-300">{booking.user.username}</td>
-                <td className="py-3 px-4 text-gray-700 border-t border-gray-300 max-sm:hidden">{booking.room.roomType}</td>
-                <td className="py-3 px-4 text-gray-700 border-t border-gray-300 max-sm:text-center">DKK {booking.totalPrice}</td>
+                <td className="py-3 px-4 text-gray-700 border-t border-gray-300">
+                  {booking.user.username}
+                </td>
+                <td className="py-3 px-4 text-gray-700 border-t border-gray-300 max-sm:hidden">
+                  {booking.room.roomType}
+                </td>
+                <td className="py-3 px-4 text-gray-700 border-t border-gray-300 max-sm:text-center">
+                  {currency} {booking.totalPrice}
+                </td>
                 <td className="py-3 px-4 text-gray-700 border-t border-gray-300 flex">
-                  <button className={`py-1 px-3 text-xs rounded-full mx-auto ${booking.isPaid ? 'bg-green-200 text-green-600' : 'bg-amber-200 text-yellow-600'}`}>
-                  {booking.isPaid ? "Completed" : "Pending"}
+                  <button
+                    className={`py-1 px-3 text-xs rounded-full mx-auto ${
+                      booking.isPaid
+                        ? "bg-green-200 text-green-600"
+                        : "bg-amber-200 text-yellow-600"
+                    }`}
+                  >
+                    {booking.isPaid ? "Completed" : "Pending"}
                   </button>
                 </td>
               </tr>
