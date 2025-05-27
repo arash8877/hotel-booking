@@ -76,7 +76,7 @@ const AddRoom = () => {
           },
         });
         setImages({ 1: null, 2: null, 3: null, 4: null });
-      }else {
+      } else {
         toast.error(data.message || "Failed to add room");
       }
     } catch (error) {
@@ -166,8 +166,8 @@ const AddRoom = () => {
         ))}
       </div>
 
-      <button className="bg-primary text-white px-8 py-2 rounded mt-8 cursor-pointer">
-        Add Room
+      <button disabled={loading} className="bg-primary text-white px-8 py-2 rounded mt-8 cursor-pointer">
+        {loading ? "Adding..." : "Add Room"}
       </button>
     </form>
   );
