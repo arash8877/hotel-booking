@@ -14,19 +14,25 @@ connectDB();
 connectCloudinary();
 
 const app = express();
+app.use(cors());
 
 // ✨ Middleware ✨
-app.use(cors());
 app.use(express.json());
 app.use(clerkMiddleware()); // This populates req.auth
 
+app.use((req, res, next) => {
+    console.log("📦 req.auth after Clerk middleware:", req.auth);
+    next();
+  });
+
+
 // Routes
+app.use("/api/clerk", clerkWebhooks); 
 app.get("/", (req, res) => res.send("API is working!"));
 app.use("/api/user", userRouter);
 app.use("/api/hotels", hotelRouter);
 app.use("/api/rooms", roomRouter);
 app.use("/api/bookings", bookingRouter);
-app.use("/api/clerk", clerkWebhooks); 
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`🔥 Server is running on port ${PORT}`));

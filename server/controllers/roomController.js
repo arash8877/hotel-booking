@@ -1,6 +1,6 @@
 import { populate } from "dotenv";
 import Hotel from "../models/Hotel.js";
-import Room from "../models/Room.js";
+import Rooms from "../models/Room.js";
 
 // API to create a new room for a hotel
 export const createRoom = async (req, res) => {
@@ -42,7 +42,7 @@ export const createRoom = async (req, res) => {
 // API to get all rooms
 export const getRooms = async (req, res) => {
   try {
-    const rooms = await Room.find({ isAvailable: true })
+    const rooms = await Rooms.find({ isAvailable: true })
       .populate({
         path: "hotel",
         populate: {
@@ -55,7 +55,7 @@ export const getRooms = async (req, res) => {
   } catch (error) {
     res.json({
       success: false,
-      message: error.message,
+      message: error.message && "Failed to fetch all rooms",
     });
   }
 };
@@ -69,7 +69,7 @@ export const getOwnerRooms = async (req, res) => {
   } catch (error) {
     res.json({
       success: false,
-      message: error.message,
+      message: error.message && "Failed to fetch rooms for specific hotel",
     });
   }
 };

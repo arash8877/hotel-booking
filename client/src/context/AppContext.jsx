@@ -13,11 +13,26 @@ export const AppProvider = ({ children }) => {
   const [showHotelReg, setShowHotelReg] = useState(false);
   const [searchedCities, setSearchedCities] = useState([]);
   const [rooms, setRooms] = useState([]);
+  const [token, setToken] = useState("")
 
   const currency = import.meta.env.VITE_CURRENCY || "DKK";
   const navigate = useNavigate();
   const { user } = useUser();
   const { getToken } = useAuth();
+
+
+  useEffect(() => {
+    const logToken = async () => {
+      try {
+        const token = await getToken();
+        setToken(token);
+        console.log("Resolved token:", token);
+      } catch (error) {
+        console.error("Error fetching token:", error);
+      }
+    };
+    logToken();
+  }, [getToken]);
 
   const fetchRooms = async () => {
     try {
@@ -26,31 +41,39 @@ export const AppProvider = ({ children }) => {
       if (data.success) {
         setRooms(data.rooms);
       } else {
-        toast.error(data.message || "Failed to fetch rooms");
+        toast.error(data.message && "Failed to fetch rooms");
       }
     } catch (error) {
-      toast.error(error.message || "Failed to fetch rooms");
+      console.error("❌ fetchUser error:", error); // <== Log full error
+      toast.error(error.message && "Failed to fetch rooms");
     }
   };
 
-  const fetchUser = async () => {
+  const fetchUser = async (accessToken) => {
+    console.log("📦 Fetching user with token:", accessToken);
     try {
       const { data } = await axios.get("/api/user", {
-        headers: { Authorization: `Bearer ${await getToken()}` },
+        headers: { Authorization: `Bearer ${accessToken}` },
       });
+      console.log("📦 User data fetched:", data);
       if (data.success) {
         setIsOwner(data.role === "hotelOwner");
       }
     } catch (error) {
-      toast.error(error.message || "Failed to fetch user data");
-    }
+      console.error("🚨 fetchUser failed!");
+      console.error("🔥 Error Status:", error?.response?.status);
+      console.error("🔥 Error Data:", error?.response?.data);
+      console.error("🔥 Full Error Object:", error);   
+    
+      toast.error(error?.response?.data?.message || "Failed to fetch user data");}
   };
 
   useEffect(() => {
-    if (user) {
-      fetchUser();
+    if (user && token) {
+      console.log("📦 Calling fetchUser with token:", token);
+      fetchUser(token);
     }
-  }, [user]);
+  }, [user, token]);
 
 
   useEffect(() => {
@@ -61,6 +84,7 @@ export const AppProvider = ({ children }) => {
     currency,
     navigate,
     user,
+    token,
     getToken,
     isOwner,
     setIsOwner,
@@ -71,6 +95,7 @@ export const AppProvider = ({ children }) => {
     rooms,
     setRooms,
     axios,
+    
   };
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
 };

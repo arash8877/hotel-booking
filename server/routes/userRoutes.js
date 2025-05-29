@@ -1,11 +1,10 @@
 import express from "express";
-import { protect } from "../middleware/authMiddleware.js"; 
+import { protect } from "../middleware/authMiddleware.js";
 import { getUserData, storeRecentSearchCities } from "../controllers/userController.js";
-import { requireAuth } from "@clerk/express";
 
 const userRouter = express.Router();
 
-userRouter.get("/",requireAuth, protect, getUserData);
-userRouter.post("/store-recent-search",requireAuth, protect, storeRecentSearchCities);
+userRouter.get("/", protect, getUserData);
+userRouter.post("/store-recent-search", protect, storeRecentSearchCities);
 
 export default userRouter;

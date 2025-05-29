@@ -2,6 +2,8 @@ import User from "../models/User.js";
 import { Webhook } from "svix";
 
 const clerkWebhooks = async (req, res) => {
+  console.log("🔥 Clerk webhook hit!", req.body);
+
   try {
     // Create a Svix instance with clerk webhook secret
     const whook = new Webhook(process.env.CLERK_WEBHOOK_SECRET);
@@ -16,11 +18,14 @@ const clerkWebhooks = async (req, res) => {
 
     //Getting data from request body
     const { data, type } = req.body;
+    console.log("📦 Webhook data:", data);
     const userData = {
       _id: data.id,
+      clerkId: data.id, 
       email: data.email_addresses[0].email_address,
       userName: data.first_name + data.last_name,
       image: data.image_url,
+      recentSearchCities: [], 
     };
 
     // Switch cases for different webhook events
@@ -41,7 +46,7 @@ const clerkWebhooks = async (req, res) => {
       }
 
       default:
-        break;
+        break;s
     }
     res.json({
       status: "success",

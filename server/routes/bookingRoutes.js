@@ -6,13 +6,12 @@ import {
   getUserBookings,
 } from "../controllers/bookingController.js";
 import { protect } from "../middleware/authMiddleware.js";
-import { requireAuth } from "@clerk/express";
 
 const bookingRouter = express.Router();
 
 bookingRouter.post("/check-availability", checkAvailabilityAPI);
-bookingRouter.post("/book", requireAuth, protect, createBooking);
-bookingRouter.get("/user", requireAuth, protect, getUserBookings);
-bookingRouter.get("/hotel", requireAuth, protect, getHotelBookings);
+bookingRouter.post("/book", protect, createBooking);
+bookingRouter.get("/user", protect, getUserBookings);
+bookingRouter.get("/hotel", protect, getHotelBookings);
 
 export default bookingRouter;
